@@ -1,0 +1,41 @@
+[
+  {
+    "id_transaksi": "TRX-1ACA1EF5",
+    "pelanggan": {
+      "nama": "Tamu",
+      "nomor_meja": 1
+    },
+    "items": [
+      {
+        "tipe": "menu",
+        "id_produk": "MKN001",
+        "nama_produk": "Nasi Goreng Spesial",
+        "harga_satuan": 35000.0,
+        "jumlah": 1,
+        "sub_total": 35000.0
+      },
+      {
+        "tipe": "menu",
+        "id_produk": "MNM001",
+        "nama_produk": "Es Teh Manis",
+        "harga_satuan": 8000.0,
+        "jumlah": 1,
+        "sub_total": 8000.0
+      },
+      {
+        "tipe": "menu",
+        "id_produk": "DSR001",
+        "nama_produk": "Puding Coklat",
+        "harga_satuan": 12000.0,
+        "jumlah": 1,
+        "sub_total": 12000.0
+      }
+    ],
+    "total": 55000.0,
+    "metode_pembayaran": "Non-Tunai",
+    "status_pembayaran": "Lunas",
+    "jumlah_bayar": 55000.0,
+    "kembalian": 0.0,
+    "waktu_transaksi": "2026-06-25T14:14:22.502239"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id_paket": "PKT001",
+    "nama_paket": "Paket Hemat A",
+    "harga_paket": 40000.0,
+    "daftar_menu": ["MKN001", "MNM001"]
+  },
+  {
+    "id_paket": "PKT002",
+    "nama_paket": "Paket Lengkap B",
+    "harga_paket": 65000.0,
+    "daftar_menu": ["MKN003", "MNM002", "DSR001"]
+  }
+]

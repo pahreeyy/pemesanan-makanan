@@ -1,0 +1,65 @@
+[
+  {
+    "id_menu": "MKN001",
+    "nama_menu": "Nasi Goreng Spesial",
+    "harga": 35000.0,
+    "kategori": "Makanan",
+    "tersedia": true
+  },
+  {
+    "id_menu": "MKN002",
+    "nama_menu": "Mie Ayam Bakso",
+    "harga": 28000.0,
+    "kategori": "Makanan",
+    "tersedia": true
+  },
+  {
+    "id_menu": "MKN003",
+    "nama_menu": "Ayam Bakar",
+    "harga": 45000.0,
+    "kategori": "Makanan",
+    "tersedia": true
+  },
+  {
+    "id_menu": "MKN004",
+    "nama_menu": "Gado-Gado",
+    "harga": 22000.0,
+    "kategori": "Makanan",
+    "tersedia": true
+  },
+  {
+    "id_menu": "MNM001",
+    "nama_menu": "Es Teh Manis",
+    "harga": 8000.0,
+    "kategori": "Minuman",
+    "tersedia": true
+  },
+  {
+    "id_menu": "MNM002",
+    "nama_menu": "Jus Alpukat",
+    "harga": 18000.0,
+    "kategori": "Minuman",
+    "tersedia": true
+  },
+  {
+    "id_menu": "MNM003",
+    "nama_menu": "Es Jeruk",
+    "harga": 10000.0,
+    "kategori": "Minuman",
+    "tersedia": true
+  },
+  {
+    "id_menu": "DSR001",
+    "nama_menu": "Puding Coklat",
+    "harga": 12000.0,
+    "kategori": "Dessert",
+    "tersedia": true
+  },
+  {
+    "id_menu": "DSR002",
+    "nama_menu": "Es Krim Vanilla",
+    "harga": 15000.0,
+    "kategori": "Dessert",
+    "tersedia": true
+  }
+]
