@@ -333,6 +333,65 @@ class DashboardKasirView(ctk.CTkFrame):
         )
         self._bayar_entry.pack(side="left", padx=(th.PAD_SM, 0))
 
+        # QR placeholder for non-cash payment
+        self._qr_frame = ctk.CTkFrame(
+            pay_frame,
+            fg_color=th.BG_LIGHT,
+            corner_radius=th.RADIUS_MD,
+            border_width=1,
+            border_color=th.BG_MEDIUM,
+        )
+        self._qr_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM))
+        self._qr_frame.pack_forget()
+
+        ctk.CTkLabel(
+            self._qr_frame,
+            text="Scan QRIS Pembayaran",
+            font=(th.FONT_FAMILY, 13, "bold"),
+            text_color=th.TEXT_PRIMARY,
+        ).pack(pady=(th.PAD_MD, th.PAD_SM))
+
+        qr_canvas = ctk.CTkFrame(self._qr_frame, fg_color="white", corner_radius=8)
+        qr_canvas.pack(padx=th.PAD_MD, pady=(0, th.PAD_SM))
+
+        qr_matrix = [
+            "1111111000000",
+            "1000000111111",
+            "1011111010101",
+            "1011111010101",
+            "1011111010101",
+            "1000000010101",
+            "1111111010101",
+            "1000011101010",
+            "1011101010101",
+            "1010011010101",
+            "1011111010101",
+            "1111111111111",
+            "0000000000000",
+        ]
+
+        for row in qr_matrix:
+            row_frame = ctk.CTkFrame(qr_canvas, fg_color="white")
+            row_frame.pack(anchor="center")
+            for cell in row:
+                color = "#000000" if cell == "1" else "#ffffff"
+                ctk.CTkFrame(
+                    row_frame,
+                    width=8,
+                    height=8,
+                    fg_color=color,
+                    corner_radius=0,
+                    border_width=0,
+                ).pack(side="left")
+
+        self._qr_total_label = ctk.CTkLabel(
+            self._qr_frame,
+            text="Total: Rp 0\nID: PAY-001",
+            font=(th.FONT_FAMILY, 11),
+            text_color=th.TEXT_SECONDARY,
+        )
+        self._qr_total_label.pack(pady=(0, th.PAD_MD))
+
         # Process button
         ctk.CTkButton(
             pay_frame,
@@ -399,6 +458,8 @@ class DashboardKasirView(ctk.CTkFrame):
 
         total = self._keranjang.hitung_total()
         self._total_label.configure(text=f"Rp {total:,.0f}")
+        if hasattr(self, "_qr_total_label"):
+            self._qr_total_label.configure(text=f"Total: Rp {total:,.0f}\nID: PAY-001")
 
     # ==================================================================
     # Payment
@@ -407,9 +468,11 @@ class DashboardKasirView(ctk.CTkFrame):
     def _on_metode_changed(self, value: str) -> None:
         if value == "Non-Tunai":
             self._bayar_frame.pack_forget()
+            self._qr_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM))
         else:
             self._bayar_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM),
                                     before=self._metode_menu.master.master)
+            self._qr_frame.pack_forget()
 
     def _proses_pembayaran(self) -> None:
         """Validate inputs, process the transaction, and show the receipt."""

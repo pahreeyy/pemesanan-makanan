@@ -37,5 +37,28 @@
     "jumlah_bayar": 55000.0,
     "kembalian": 0.0,
     "waktu_transaksi": "2026-06-25T14:14:22.502239"
+  },
+  {
+    "id_transaksi": "TRX-57CD64BE",
+    "pelanggan": {
+      "nama": "Tamu",
+      "nomor_meja": 1
+    },
+    "items": [
+      {
+        "tipe": "menu",
+        "id_produk": "MKN003",
+        "nama_produk": "Ayam Bakar",
+        "harga_satuan": 45000.0,
+        "jumlah": 1,
+        "sub_total": 45000.0
+      }
+    ],
+    "total": 45000.0,
+    "metode_pembayaran": "Non-Tunai",
+    "status_pembayaran": "Lunas",
+    "jumlah_bayar": 45000.0,
+    "kembalian": 0.0,
+    "waktu_transaksi": "2026-07-01T22:44:41.897201"
   }
 ]
