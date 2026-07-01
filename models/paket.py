@@ -26,6 +26,7 @@ class Paket:
         self.id_paket: str = id_paket
         self.nama_paket: str = nama_paket
         self.harga_paket: float = float(harga_paket)
+        # Asosiasi (Association): Paket menyimpan list ID dari Menu yang terkait dengannya
         self.daftar_menu: List[str] = daftar_menu if daftar_menu is not None else []
 
     # ------------------------------------------------------------------

@@ -22,6 +22,7 @@ class ItemPesanan:
     def __init__(self, produk: Union[Menu, Paket], jumlah: int = 1) -> None:
         if jumlah < 1:
             raise ValueError("Jumlah item harus minimal 1.")
+        # Asosiasi (Association): ItemPesanan menyimpan referensi ke objek produk
         self.produk: Union[Menu, Paket] = produk
         self.jumlah: int = jumlah
 

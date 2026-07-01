@@ -18,6 +18,7 @@ class Pelanggan:
     def __init__(self, nama: str, nomor_meja: int = 0) -> None:
         self.nama: str = nama
         self.nomor_meja: int = nomor_meja
+        # Komposisi (Composition): Pelanggan secara langsung memiliki dan mengelola siklus hidup Keranjang
         self.keranjang: Keranjang = Keranjang()
 
     # ------------------------------------------------------------------

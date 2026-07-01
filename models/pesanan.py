@@ -8,6 +8,7 @@ from typing import List
 from models.item_pesanan import ItemPesanan
 
 
+# Pewarisan (Inheritance): Enum mewarisi sifat dari str dan Enum bawaan Python
 class StatusPesanan(str, Enum):
     """Lifecycle states that an order can be in."""
     ANTRIAN  = "Antrian"    # Waiting to be prepared
@@ -35,6 +36,7 @@ class Pesanan:
         waktu_pesan: datetime.datetime | None = None,
     ) -> None:
         self.id_pesanan: str = id_pesanan
+        # Agregasi (Aggregation): Pesanan menampung list dari ItemPesanan
         self.items: List[ItemPesanan] = items if items is not None else []
         self.status: StatusPesanan = status
         self.waktu_pesan: datetime.datetime = (

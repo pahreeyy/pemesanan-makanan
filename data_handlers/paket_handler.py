@@ -8,6 +8,7 @@ from data_handlers.base_handler import BaseHandler
 from models.paket import Paket
 
 
+# Pewarisan (Inheritance): PaketHandler mewarisi fungsi CRUD dasar dari BaseHandler
 class PaketHandler(BaseHandler):
     """
     Manages all CRUD operations for Paket objects backed by paket.json.

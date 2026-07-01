@@ -11,6 +11,7 @@ from models.item_pesanan import ItemPesanan
 from models.pelanggan import Pelanggan
 
 
+# Pewarisan (Inheritance): Enum mewarisi sifat dari str dan Enum bawaan Python
 class MetodePembayaran(str, Enum):
     """Accepted payment methods."""
     TUNAI    = "Tunai"
@@ -47,7 +48,9 @@ class Transaksi:
         waktu_transaksi: Optional[datetime.datetime] = None,
     ) -> None:
         self.id_transaksi: str = id_transaksi or f"TRX-{uuid.uuid4().hex[:8].upper()}"
+        # Asosiasi (Association): Transaksi mencatat referensi ke Pelanggan
         self.pelanggan: Pelanggan = pelanggan
+        # Agregasi (Aggregation): Transaksi menampung kumpulan ItemPesanan
         self.items: List[ItemPesanan] = items
         self.metode_pembayaran: MetodePembayaran = metode_pembayaran
         self.status_pembayaran: StatusPembayaran = StatusPembayaran.BELUM_BAYAR
@@ -105,6 +108,7 @@ class Transaksi:
         Delegates to NotaPesanan for full formatting.
         """
         from models.nota_pesanan import NotaPesanan  # avoid circular import
+        # Ketergantungan (Dependency): Transaksi memanggil NotaPesanan sementara untuk fungsi cetak
         nota = NotaPesanan(self)
         return nota.format_nota()
 

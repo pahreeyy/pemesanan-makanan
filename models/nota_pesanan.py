@@ -19,6 +19,7 @@ class NotaPesanan:
     """
 
     def __init__(self, transaksi: "Transaksi") -> None:
+        # Asosiasi (Association): NotaPesanan menerima objek Transaksi untuk dibaca datanya
         self.transaksi = transaksi
 
     # ------------------------------------------------------------------

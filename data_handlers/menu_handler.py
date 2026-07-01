@@ -8,6 +8,7 @@ from data_handlers.base_handler import BaseHandler
 from models.menu import Menu
 
 
+# Pewarisan (Inheritance): MenuHandler mewarisi fungsi CRUD dasar dari BaseHandler
 class MenuHandler(BaseHandler):
     """
     Manages all CRUD operations for Menu objects backed by menu.json.

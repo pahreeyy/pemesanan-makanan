@@ -10,6 +10,7 @@ from data_handlers.base_handler import BaseHandler
 from models.transaksi import Transaksi
 
 
+# Pewarisan (Inheritance): TransaksiHandler mewarisi fungsi CRUD dasar dari BaseHandler
 class TransaksiHandler(BaseHandler):
     """
     Manages all CRUD operations for Transaksi records backed by transaksi.json.

@@ -21,6 +21,7 @@ class Keranjang:
     """
 
     def __init__(self) -> None:
+        # Agregasi (Aggregation): Keranjang menampung kumpulan ItemPesanan
         self._items: List[ItemPesanan] = []
 
     # ------------------------------------------------------------------
