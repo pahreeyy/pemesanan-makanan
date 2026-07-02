@@ -372,8 +372,8 @@ class FaceLoginWindow(_BaseFaceWindow):
                     self.status_label.configure(text="Wajah cocok. Mengalihkan ke dashboard...")
                     self.after(500, self._finish_action)
                 else:
-                    self.status_label.configure(text="Wajah belum cocok. Daftarkan wajah dulu atau coba lagi.")
-                    self._detected_frames = 0
+                    self._show_unregistered_warning(frame)
+                    return
             else:
                 self.status_label.configure(text=f"Mencocokkan wajah... {self._detected_frames}/4")
 
@@ -382,6 +382,21 @@ class FaceLoginWindow(_BaseFaceWindow):
         ctk_image = ctk.CTkImage(light_image=image, size=image.size)
         self.video_label.configure(image=ctk_image, text="")
         self.video_label.image = ctk_image
+
+    def _show_unregistered_warning(self, frame):
+        self._verified = True  # Membekukan update frame
+        self.status_label.configure(text="Wajah belum terdaftar atau tidak cocok. Silakan daftar terlebih dahulu.")
+        
+        # Tampilkan frame terakhir yang ter-capture
+        image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        image = ImageOps.contain(image, (640, 460))
+        ctk_image = ctk.CTkImage(light_image=image, size=image.size)
+        self.video_label.configure(image=ctk_image, text="")
+        self.video_label.image = ctk_image
+        
+        # Munculkan tombol Kembali
+        self.continue_button.configure(text="Kembali", command=self._cancel)
+        self.continue_button.pack(side="left", padx=(0, 8))
 
     def _match_face(self, face_region):
         if not self._registered_histograms:
