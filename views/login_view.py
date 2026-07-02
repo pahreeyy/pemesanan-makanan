@@ -2,10 +2,86 @@
 # The application entry screen — role selection (Kasir / Admin).
 
 from __future__ import annotations
+import os
+import shutil
+import tkinter.messagebox as messagebox
 import customtkinter as ctk
 from typing import Callable
 from views import theme as th
 from views.face_recognition_view import FaceLoginWindow, FaceRegistrationWindow
+
+
+class DeleteFaceWindow(ctk.CTkToplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Hapus Data Wajah")
+        self.geometry("400x300")
+        self.transient(parent)
+        self.grab_set()
+        
+        self.faces = []
+        self.base_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "faces")
+        self._load_faces()
+        
+        self._build_ui()
+        
+    def _load_faces(self):
+        self.faces = []
+        for role in ["kasir", "admin"]:
+            role_dir = os.path.join(self.base_dir, role)
+            if os.path.exists(role_dir):
+                for name in os.listdir(role_dir):
+                    name_dir = os.path.join(role_dir, name)
+                    if os.path.isdir(name_dir):
+                        self.faces.append(f"{name} ({role.title()})")
+                        
+    def _build_ui(self):
+        self.configure(fg_color=th.BG_DARKEST)
+        
+        ctk.CTkLabel(self, text="Pilih Wajah untuk Dihapus", font=th.FONT_HEADING_MD).pack(pady=20)
+        
+        if not self.faces:
+            ctk.CTkLabel(self, text="Belum ada data wajah terdaftar.", text_color=th.TEXT_SECONDARY).pack()
+            ctk.CTkButton(self, text="Tutup", command=self.destroy, **th.btn_ghost()).pack(pady=20)
+            return
+            
+        self.selected_face = ctk.StringVar(value=self.faces[0])
+        self.dropdown = ctk.CTkOptionMenu(self, values=self.faces, variable=self.selected_face)
+        self.dropdown.pack(pady=10)
+        
+        btn_frame = ctk.CTkFrame(self, fg_color="transparent")
+        btn_frame.pack(pady=20)
+        
+        ctk.CTkButton(
+            btn_frame, 
+            text="Hapus", 
+            command=self._delete_selected, 
+            **th.btn_primary(fg_color=th.ACCENT_DANGER, hover_color="#DC2626", width=100)
+        ).pack(side="left", padx=10)
+        
+        ctk.CTkButton(
+            btn_frame, 
+            text="Batal", 
+            command=self.destroy, 
+            **th.btn_ghost(width=100)
+        ).pack(side="left")
+        
+    def _delete_selected(self):
+        selection = self.selected_face.get()
+        import re
+        match = re.match(r"(.+)\s+\((Kasir|Admin)\)", selection)
+        if match:
+            name = match.group(1).strip()
+            role = match.group(2).lower()
+            
+            target_dir = os.path.join(self.base_dir, role, name)
+            if messagebox.askyesno("Konfirmasi", f"Hapus data wajah untuk {name} ({role.title()})?"):
+                try:
+                    shutil.rmtree(target_dir)
+                    messagebox.showinfo("Berhasil", "Data wajah berhasil dihapus.")
+                    self.destroy()
+                except Exception as e:
+                    messagebox.showerror("Error", f"Gagal menghapus: {e}")
 
 
 class LoginView(ctk.CTkFrame):
@@ -46,6 +122,10 @@ class LoginView(ctk.CTkFrame):
             on_done=self.on_login,
             on_cancel=lambda: None,
         )
+
+    def _delete_face_data(self) -> None:
+        """Open a window to delete specific face data."""
+        DeleteFaceWindow(self.winfo_toplevel())
 
     def _build_ui(self) -> None:
         self.pack(fill="both", expand=True)
@@ -110,6 +190,13 @@ class LoginView(ctk.CTkFrame):
             command=self._start_face_registration,
             **th.btn_ghost(width=320, height=46, font=(th.FONT_FAMILY, 14, "bold")),
         ).pack()
+
+        ctk.CTkButton(
+            center,
+            text="🗑️ Hapus Data Wajah",
+            command=self._delete_face_data,
+            **th.btn_ghost(width=320, height=46, font=(th.FONT_FAMILY, 14, "bold"), text_color=th.ACCENT_DANGER),
+        ).pack(pady=(th.PAD_SM, 0))
 
         # Footer
         ctk.CTkLabel(

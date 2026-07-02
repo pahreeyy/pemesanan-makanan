@@ -292,10 +292,21 @@ class FaceRegistrationWindow(_BaseFaceWindow):
         self.video_label.image = ctk_image
 
     def _show_role_selection(self):
-        self.status_label.configure(text="Wajah berhasil dipindai. Pilih peran Anda untuk mendaftar.")
+        self.status_label.configure(text="Wajah berhasil dipindai. Masukkan nama dan pilih peran.")
+        
+        self.selection_frame = ctk.CTkFrame(self.continue_button.master, fg_color="transparent")
+        self.selection_frame.pack(side="left", fill="x", expand=True)
+
+        self.name_entry = ctk.CTkEntry(
+            self.selection_frame, 
+            placeholder_text="Masukkan Nama Anda",
+            width=200,
+            height=40
+        )
+        self.name_entry.pack(side="left", padx=(0, 12))
         
         self.btn_kasir = ctk.CTkButton(
-            self.continue_button.master,
+            self.selection_frame,
             text="Sebagai Kasir",
             command=lambda: self._save_and_finish("kasir"),
             **th.btn_primary(width=120, height=40)
@@ -303,7 +314,7 @@ class FaceRegistrationWindow(_BaseFaceWindow):
         self.btn_kasir.pack(side="left", padx=(0, 8))
         
         self.btn_admin = ctk.CTkButton(
-            self.continue_button.master,
+            self.selection_frame,
             text="Sebagai Admin",
             command=lambda: self._save_and_finish("admin"),
             **th.btn_primary(width=120, height=40)
@@ -311,8 +322,14 @@ class FaceRegistrationWindow(_BaseFaceWindow):
         self.btn_admin.pack(side="left", padx=(0, 8))
 
     def _save_and_finish(self, role: str):
+        name = self.name_entry.get().strip()
+        if not name:
+            messagebox.showwarning("Peringatan", "Nama tidak boleh kosong!")
+            self.name_entry.focus()
+            return
+            
         import uuid
-        sample_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "faces", role)
+        sample_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "faces", role, name)
         os.makedirs(sample_dir, exist_ok=True)
         base_name = str(uuid.uuid4())[:8]
         for i, hist in enumerate(self._temp_hists):
@@ -321,7 +338,7 @@ class FaceRegistrationWindow(_BaseFaceWindow):
             
         self.role = role
         self._verified = True
-        self.status_label.configure(text=f"Berhasil didaftarkan sebagai {role.title()}.")
+        self.status_label.configure(text=f"Berhasil didaftarkan sebagai {role.title()} ({name}).")
         self.after(500, self._finish_action)
 
     def _compute_hist(self, face_region):
@@ -353,11 +370,13 @@ class FaceLoginWindow(_BaseFaceWindow):
             return
 
         self._registered_histograms = []
-        for file_name in sorted(os.listdir(self._sample_dir)):
-            if file_name.endswith(".npy"):
-                path = os.path.join(self._sample_dir, file_name)
-                hist = np.load(path)
-                self._registered_histograms.append(hist)
+        for root, _, files in os.walk(self._sample_dir):
+            for file_name in files:
+                if file_name.endswith(".npy"):
+                    name = os.path.basename(root)
+                    path = os.path.join(root, file_name)
+                    hist = np.load(path)
+                    self._registered_histograms.append((hist, name))
 
     def _handle_frame(self, face_region, box, frame) -> None:
         if face_region is None:
@@ -366,10 +385,10 @@ class FaceLoginWindow(_BaseFaceWindow):
         else:
             self._detected_frames += 1
             if self._detected_frames >= 4:
-                match_score = self._match_face(face_region)
+                match_score, matched_name = self._match_face(face_region)
                 if match_score is not None and match_score >= 0.55:
                     self._verified = True
-                    self.status_label.configure(text="Wajah cocok. Mengalihkan ke dashboard...")
+                    self.status_label.configure(text=f"Wajah cocok ({matched_name}). Mengalihkan...")
                     self.after(500, self._finish_action)
                 else:
                     self._show_unregistered_warning(frame)
@@ -400,17 +419,21 @@ class FaceLoginWindow(_BaseFaceWindow):
 
     def _match_face(self, face_region):
         if not self._registered_histograms:
-            return None
+            return None, None
 
         current_hist = self._compute_hist(face_region)
-        scores = []
-        for registered_hist in self._registered_histograms:
+        best_score = -1.0
+        best_name = None
+        for registered_hist, name in self._registered_histograms:
             score = cv2.compareHist(current_hist, registered_hist, cv2.HISTCMP_CORREL)
-            scores.append(float(score))
+            score = float(score)
+            if score > best_score:
+                best_score = score
+                best_name = name
 
-        if not scores:
-            return None
-        return max(scores)
+        if best_score < 0:
+            return None, None
+        return best_score, best_name
 
     def _compute_hist(self, face_region):
         hist = cv2.calcHist([face_region], [0], None, [32], [0, 256])
