@@ -5,6 +5,7 @@ from __future__ import annotations
 import customtkinter as ctk
 from typing import Callable
 from views import theme as th
+from views.face_recognition_view import FaceLoginWindow, FaceRegistrationWindow
 
 
 class LoginView(ctk.CTkFrame):
@@ -28,6 +29,24 @@ class LoginView(ctk.CTkFrame):
     # ------------------------------------------------------------------
     # Layout
     # ------------------------------------------------------------------
+
+    def _start_face_registration(self, role: str) -> None:
+        """Open a camera-based window to register a face sample for the selected role."""
+        FaceRegistrationWindow(
+            self.winfo_toplevel(),
+            role,
+            on_done=self.on_login,
+            on_cancel=lambda: None,
+        )
+
+    def _start_face_login(self, role: str) -> None:
+        """Open a camera-based window to log in using a registered face sample."""
+        FaceLoginWindow(
+            self.winfo_toplevel(),
+            role,
+            on_done=self.on_login,
+            on_cancel=lambda: None,
+        )
 
     def _build_ui(self) -> None:
         self.pack(fill="both", expand=True)
@@ -65,19 +84,38 @@ class LoginView(ctk.CTkFrame):
             text_color=th.TEXT_PRIMARY,
         ).pack(pady=(0, th.PAD_MD))
 
-        # ── Kasir button ─────────────────────────────────────────────
+        ctk.CTkLabel(
+            center,
+            text="Akses wajah",
+            font=th.FONT_HEADING_MD,
+            text_color=th.TEXT_PRIMARY,
+        ).pack(pady=(0, th.PAD_SM))
+
         ctk.CTkButton(
             center,
-            text="🖥️   Masuk sebagai Kasir",
-            command=lambda: self.on_login("kasir"),
+            text="�️   Masuk sebagai Kasir",
+            command=lambda: self._start_face_login("kasir"),
             **th.btn_primary(width=320, height=52, font=(th.FONT_FAMILY, 15, "bold")),
         ).pack(pady=(0, th.PAD_SM))
 
-        # ── Admin button ─────────────────────────────────────────────
         ctk.CTkButton(
             center,
-            text="⚙️   Masuk sebagai Admin / Manajer",
-            command=lambda: self.on_login("admin"),
+            text="📝   Daftarkan wajah dulu",
+            command=lambda: self._start_face_registration("kasir"),
+            **th.btn_ghost(width=320, height=46, font=(th.FONT_FAMILY, 14, "bold")),
+        ).pack(pady=(0, th.PAD_XS))
+
+        ctk.CTkButton(
+            center,
+            text="👤   Login dengan wajah",
+            command=lambda: self._start_face_login("kasir"),
+            **th.btn_ghost(width=320, height=46, font=(th.FONT_FAMILY, 14, "bold")),
+        ).pack(pady=(0, th.PAD_SM))
+
+        ctk.CTkButton(
+            center,
+            text="🛠️   Masuk sebagai Admin / Manajer",
+            command=lambda: self._start_face_login("admin"),
             **th.btn_ghost(width=320, height=52, font=(th.FONT_FAMILY, 15, "bold")),
         ).pack()
 

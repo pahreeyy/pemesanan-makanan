@@ -60,5 +60,75 @@
     "jumlah_bayar": 45000.0,
     "kembalian": 0.0,
     "waktu_transaksi": "2026-07-01T22:44:41.897201"
+  },
+  {
+    "id_transaksi": "TRX-3FF9ED0F",
+    "pelanggan": {
+      "nama": "Tamu",
+      "nomor_meja": 1
+    },
+    "items": [
+      {
+        "tipe": "menu",
+        "id_produk": "MKN003",
+        "nama_produk": "Ayam Bakar",
+        "harga_satuan": 45000.0,
+        "jumlah": 1,
+        "sub_total": 45000.0
+      },
+      {
+        "tipe": "menu",
+        "id_produk": "MNM002",
+        "nama_produk": "Jus Alpukat",
+        "harga_satuan": 18000.0,
+        "jumlah": 2,
+        "sub_total": 36000.0
+      }
+    ],
+    "total": 81000.0,
+    "metode_pembayaran": "Non-Tunai",
+    "status_pembayaran": "Lunas",
+    "jumlah_bayar": 81000.0,
+    "kembalian": 0.0,
+    "waktu_transaksi": "2026-07-02T10:02:18.361882"
+  },
+  {
+    "id_transaksi": "TRX-51BEE791",
+    "pelanggan": {
+      "nama": "Tamu",
+      "nomor_meja": 1
+    },
+    "items": [
+      {
+        "tipe": "menu",
+        "id_produk": "DSR001",
+        "nama_produk": "Puding Coklat",
+        "harga_satuan": 12000.0,
+        "jumlah": 1,
+        "sub_total": 12000.0
+      },
+      {
+        "tipe": "menu",
+        "id_produk": "MKN002",
+        "nama_produk": "Mie Ayam Bakso",
+        "harga_satuan": 28000.0,
+        "jumlah": 1,
+        "sub_total": 28000.0
+      },
+      {
+        "tipe": "menu",
+        "id_produk": "MNM001",
+        "nama_produk": "Es Teh Manis",
+        "harga_satuan": 8000.0,
+        "jumlah": 2,
+        "sub_total": 16000.0
+      }
+    ],
+    "total": 56000.0,
+    "metode_pembayaran": "Non-Tunai",
+    "status_pembayaran": "Lunas",
+    "jumlah_bayar": 56000.0,
+    "kembalian": 0.0,
+    "waktu_transaksi": "2026-07-02T10:34:13.775035"
   }
 ]
