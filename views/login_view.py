@@ -30,11 +30,10 @@ class LoginView(ctk.CTkFrame):
     # Layout
     # ------------------------------------------------------------------
 
-    def _start_face_registration(self, role: str) -> None:
-        """Open a camera-based window to register a face sample for the selected role."""
+    def _start_face_registration(self) -> None:
+        """Open a camera-based window to register a face sample."""
         FaceRegistrationWindow(
             self.winfo_toplevel(),
-            role,
             on_done=self.on_login,
             on_cancel=lambda: None,
         )
@@ -84,39 +83,32 @@ class LoginView(ctk.CTkFrame):
             text_color=th.TEXT_PRIMARY,
         ).pack(pady=(0, th.PAD_MD))
 
-        ctk.CTkLabel(
-            center,
-            text="Akses wajah",
-            font=th.FONT_HEADING_MD,
-            text_color=th.TEXT_PRIMARY,
-        ).pack(pady=(0, th.PAD_SM))
-
         ctk.CTkButton(
             center,
-            text="�️   Masuk sebagai Kasir",
+            text="Masuk sebagai Kasir",
             command=lambda: self._start_face_login("kasir"),
             **th.btn_primary(width=320, height=52, font=(th.FONT_FAMILY, 15, "bold")),
         ).pack(pady=(0, th.PAD_SM))
 
         ctk.CTkButton(
             center,
-            text="📝   Daftarkan wajah dulu",
-            command=lambda: self._start_face_registration("kasir"),
-            **th.btn_ghost(width=320, height=46, font=(th.FONT_FAMILY, 14, "bold")),
+            text="Masuk sebagai Admin / Manajer",
+            command=lambda: self._start_face_login("admin"),
+            **th.btn_primary(width=320, height=52, font=(th.FONT_FAMILY, 15, "bold")),
+        ).pack(pady=(0, th.PAD_XL))
+
+        ctk.CTkLabel(
+            center,
+            text="Belum punya akses?",
+            font=th.FONT_BODY_SM,
+            text_color=th.TEXT_SECONDARY,
         ).pack(pady=(0, th.PAD_XS))
 
         ctk.CTkButton(
             center,
-            text="👤   Login dengan wajah",
-            command=lambda: self._start_face_login("kasir"),
+            text="📝 Daftarkan Wajah",
+            command=self._start_face_registration,
             **th.btn_ghost(width=320, height=46, font=(th.FONT_FAMILY, 14, "bold")),
-        ).pack(pady=(0, th.PAD_SM))
-
-        ctk.CTkButton(
-            center,
-            text="🛠️   Masuk sebagai Admin / Manajer",
-            command=lambda: self._start_face_login("admin"),
-            **th.btn_ghost(width=320, height=52, font=(th.FONT_FAMILY, 15, "bold")),
         ).pack()
 
         # Footer

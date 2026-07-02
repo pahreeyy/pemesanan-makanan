@@ -44,7 +44,7 @@ class _BaseFaceWindow(ctk.CTkToplevel):
 
         if cv2 is None:
             self.status_label.configure(text="OpenCV belum terinstal. Anda dapat melanjutkan secara manual.")
-            self.continue_button.configure(state="normal")
+            self.continue_button.pack(side="left", padx=(0, 8))
             self.after(150, self._show_dependency_warning)
             return
 
@@ -104,10 +104,10 @@ class _BaseFaceWindow(ctk.CTkToplevel):
             button_row,
             text="Lanjutkan",
             command=self._finish_action,
-            state="normal",
             **th.btn_primary(width=140, height=40),
         )
         self.continue_button.pack(side="left", padx=(0, 8))
+        self.continue_button.pack_forget()
 
         ctk.CTkButton(
             button_row,
@@ -135,7 +135,7 @@ class _BaseFaceWindow(ctk.CTkToplevel):
         self._camera = self._open_camera()
         if self._camera is None:
             self.status_label.configure(text="Kamera tidak terdeteksi. Pastikan kamera sudah aktif dan diizinkan.")
-            self.continue_button.configure(state="normal")
+            self.continue_button.pack(side="left", padx=(0, 8))
             return
 
         self._face_cascade = self._load_face_cascade()
@@ -250,29 +250,38 @@ class _BaseFaceWindow(ctk.CTkToplevel):
 class FaceRegistrationWindow(_BaseFaceWindow):
     """Register a face sample for the selected role."""
 
-    def __init__(self, parent, role: str, on_done, on_cancel) -> None:
+    def __init__(self, parent, on_done, on_cancel) -> None:
         self._sample_count = 0
-        self._sample_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "faces", role)
-        super().__init__(parent, role, on_done, on_cancel)
+        self._temp_hists = []
+        super().__init__(parent, "register", on_done, on_cancel)
 
     @property
     def _title(self) -> str:
-        return f"Daftarkan wajah untuk {self.role}"
+        return "Daftarkan wajah baru"
 
     @property
     def _subtitle(self) -> str:
         return "Posisikan wajah Anda di depan kamera. Sistem akan menyimpan beberapa sampel wajah."
 
     def _handle_frame(self, face_region, box, frame) -> None:
+        if self._sample_count >= 3:
+            return
+
         if face_region is None:
             self._detected_frames = max(0, self._detected_frames - 1)
             self.status_label.configure(text="Belum ada wajah yang terlihat. Arahkan wajah ke kamera.")
         else:
             self._detected_frames += 1
             if self._detected_frames >= 5:
-                self._save_face_sample(face_region)
+                hist = self._compute_hist(face_region)
+                self._temp_hists.append(hist)
+                self._sample_count += 1
                 self._detected_frames = 0
-                self.status_label.configure(text=f"Sampel wajah tersimpan ({self._sample_count}/3)")
+                
+                if self._sample_count >= 3:
+                    self._show_role_selection()
+                else:
+                    self.status_label.configure(text=f"Sampel wajah tersimpan ({self._sample_count}/3)")
             else:
                 self.status_label.configure(text=f"Menjaga posisi wajah... {self._detected_frames}/5")
 
@@ -282,27 +291,38 @@ class FaceRegistrationWindow(_BaseFaceWindow):
         self.video_label.configure(image=ctk_image, text="")
         self.video_label.image = ctk_image
 
-    def _save_face_sample(self, face_region) -> None:
-        os.makedirs(self._sample_dir, exist_ok=True)
-        if self._sample_count >= 3:
-            self.status_label.configure(text="Pendaftaran wajah selesai. Anda bisa menutup jendela ini.")
-            self.continue_button.configure(text="Selesai")
-            self._verified = True
-            self.after(600, self._finish_action)
-            return
+    def _show_role_selection(self):
+        self.status_label.configure(text="Wajah berhasil dipindai. Pilih peran Anda untuk mendaftar.")
+        
+        self.btn_kasir = ctk.CTkButton(
+            self.continue_button.master,
+            text="Sebagai Kasir",
+            command=lambda: self._save_and_finish("kasir"),
+            **th.btn_primary(width=120, height=40)
+        )
+        self.btn_kasir.pack(side="left", padx=(0, 8))
+        
+        self.btn_admin = ctk.CTkButton(
+            self.continue_button.master,
+            text="Sebagai Admin",
+            command=lambda: self._save_and_finish("admin"),
+            **th.btn_primary(width=120, height=40)
+        )
+        self.btn_admin.pack(side="left", padx=(0, 8))
 
-        hist = self._compute_hist(face_region)
-        path = os.path.join(self._sample_dir, f"sample_{self._sample_count + 1}.npy")
-        np.save(path, hist)
-        self._sample_count += 1
-
-        if self._sample_count >= 3:
-            self.status_label.configure(text="Pendaftaran wajah selesai. Anda bisa menutup jendela ini.")
-            self.continue_button.configure(text="Selesai")
-            self._verified = True
-            self.after(600, self._finish_action)
-        else:
-            self.status_label.configure(text=f"Sampel wajah tersimpan ({self._sample_count}/3)")
+    def _save_and_finish(self, role: str):
+        import uuid
+        sample_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "faces", role)
+        os.makedirs(sample_dir, exist_ok=True)
+        base_name = str(uuid.uuid4())[:8]
+        for i, hist in enumerate(self._temp_hists):
+            path = os.path.join(sample_dir, f"sample_{base_name}_{i+1}.npy")
+            np.save(path, hist)
+            
+        self.role = role
+        self._verified = True
+        self.status_label.configure(text=f"Berhasil didaftarkan sebagai {role.title()}.")
+        self.after(500, self._finish_action)
 
     def _compute_hist(self, face_region):
         hist = cv2.calcHist([face_region], [0], None, [32], [0, 256])
