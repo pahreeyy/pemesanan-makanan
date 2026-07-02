@@ -393,12 +393,13 @@ class DashboardKasirView(ctk.CTkFrame):
         self._qr_total_label.pack(pady=(0, th.PAD_MD))
 
         # Process button
-        ctk.CTkButton(
+        self._proses_btn = ctk.CTkButton(
             pay_frame,
             text="💳  Proses Pembayaran",
             command=self._proses_pembayaran,
             **th.btn_primary(height=46, font=(th.FONT_FAMILY, 15, "bold")),
-        ).pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_MD))
+        )
+        self._proses_btn.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_MD))
 
     # ==================================================================
     # Cart Logic
@@ -468,11 +469,12 @@ class DashboardKasirView(ctk.CTkFrame):
     def _on_metode_changed(self, value: str) -> None:
         if value == "Non-Tunai":
             self._bayar_frame.pack_forget()
-            self._qr_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM))
+            self._qr_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM),
+                                before=self._proses_btn)
         else:
-            self._bayar_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM),
-                                    before=self._metode_menu.master.master)
             self._qr_frame.pack_forget()
+            self._bayar_frame.pack(fill="x", padx=th.PAD_MD, pady=(0, th.PAD_SM),
+                                   before=self._proses_btn)
 
     def _proses_pembayaran(self) -> None:
         """Validate inputs, process the transaction, and show the receipt."""
